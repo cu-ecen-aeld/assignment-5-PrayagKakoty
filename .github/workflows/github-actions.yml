@@ -11,8 +11,8 @@ jobs:
         runs-on: self-hosted
         timeout-minutes: 120
 
-        env:
-            FORCE_UNSAFE_CONFIGURE: 1
+#        env:
+ #           FORCE_UNSAFE_CONFIGURE: 1
             
         steps:
           - uses: actions/checkout@v2
