@@ -1,0 +1,54 @@
+#!/bin/sh
+
+case "$1" in
+start)
+	echo "Loading LDD modules"
+	modprobe scull
+	modprobe faulty
+	modprobe hello
+
+	echo "Creating device Nodes"
+	major=$(awk '$2=="scull" && $1 ~ /^[0-9]+$/ {print $1}' /proc/devices)
+	if [ ! -z "$major" ]; then
+		rm -f /dev/scull[0-3]
+		mknod /dev/scull0 c $major 0
+		mknod /dev/scull1 c $major 1
+		mknod /dev/scull2 c $major 2
+		mknod /dev/scull3 c $major 3
+		chmod 666 /dev/scull[0-3]
+		echo " /dev/scull[0-3] created (Major: $major)"
+	fi
+
+	major=$(awk '$2=="faulty" && $1 ~ /^[0-9]+$/ {print $1}' /proc/devices)
+	if [ ! -z "$major" ]; then
+		rm -f /dev/faulty
+		mknod /dev/faulty c $major 0
+		chmod 666 /dev/faulty
+		echo " /dev/faulty created (Major: $major)"
+	else
+		echo " Error: could not find major for faulty"
+	fi
+	;;
+
+stop)
+	echo "Unloading LDD modules"
+	rmmod hello
+	rmmod faulty
+	rmmod scull
+
+	echo "Cleaning up device nodes"
+	rm -f /dev/scull[0-3] /dev/faulty
+	;;
+
+restart)
+	$0 stop
+	$0 start
+	;;
+
+*)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+	;;
+esac
+
+exit 0
