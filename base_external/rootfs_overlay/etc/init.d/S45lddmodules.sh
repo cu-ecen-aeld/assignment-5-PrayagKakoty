@@ -7,6 +7,15 @@ start)
 	modprobe faulty
 	modprobe hello
 
+
+	echo "Waiting for modules to register in /proc/devices"
+	for i in $(seq 1 10); do
+		if grep -q "scull" /proc/devices && grep -q "faulty" /proc/devices; then
+			break
+		fi
+		sleep 1
+	done
+
 	echo "Creating device Nodes"
 	major=$(awk '$2=="scull" && $1 ~ /^[0-9]+$/ {print $1}' /proc/devices)
 	if [ ! -z "$major" ]; then
