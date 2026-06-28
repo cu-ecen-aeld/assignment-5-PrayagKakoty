@@ -2,13 +2,11 @@
 
 case "$1" in
 start)
-	echo "Updating module dependencies"
-	depmod -a 
-
 	echo "Loading LDD modules"
-	modprobe scull
-	modprobe faulty
-	modprobe hello
+	KVER=$(uname -r)
+	insmod /lib/modules/$KVER/extra/hello.ko
+	insmod /lib/modules/$KVER/extra/scull.ko
+	insmod /lib/modules/$KVER/extra/faulty.ko
 
 
 	echo "Waiting for modules to register in /proc/devices"
