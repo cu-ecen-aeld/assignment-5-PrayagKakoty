@@ -11,25 +11,19 @@ jobs:
         runs-on: self-hosted
         timeout-minutes: 120
 
-#        env:
- #           FORCE_UNSAFE_CONFIGURE: 1
+        env:
+            FORCE_UNSAFE_CONFIGURE: 1
             
         steps:
           - uses: actions/checkout@v2
-          - name: Run Diagnostics
-            run: |
-              echo "=== Current User ==="
-              whoami
-              echo "=== Working directory ==="
-              pwd
-              echo "===Available Tools ==="
-              command -v node || echo "Node missing"
-              command -v docker || echp "Docker missing"
-          - name: Checkout submodules
-            run: git submodule update --init --recursive
+
           - uses: webfactory/ssh-agent@v0.5.3
             with:
                 ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          
+          - name: Checkout submodules
+            run: git submodule update --init --recursive
+
           - name: Run full test
             env:
               GIT_SSH_COMMAND: "ssh -o StrictHostKeyChecking=no"
